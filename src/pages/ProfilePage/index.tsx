@@ -1,3 +1,3 @@
-import Profile from './Profile';
+import ProfilePage from './ProfilePage.tsx';
 
-export default Profile;
+export default ProfilePage;

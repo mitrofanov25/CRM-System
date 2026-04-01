@@ -1,49 +1,68 @@
-import { FC } from 'react';
-import Sider, { SiderProps } from 'antd/es/layout/Sider';
-import { useAppSelector } from '../../store';
-import { NavLink } from 'react-router';
+import {
+  CarryOutOutlined,
+  SmileOutlined,
+  UserSwitchOutlined,
+} from '@ant-design/icons';
 import { Button, Flex } from 'antd';
-import { CarryOutOutlined, SmileOutlined } from '@ant-design/icons';
+import Sider, { SiderProps } from 'antd/es/layout/Sider';
+import { FC } from 'react';
+import { useNavigate } from 'react-router';
 
-const AppSider: FC<SiderProps> = (props) => {
-  const { ...rest } = props;
+import useIsModeratorOrAdmin from '../../hooks/useIsModeratorOrAdmin.ts';
+import { useAppSelector } from '../../store';
 
-  const isAuth = useAppSelector((state) => state.auth.isAuth);
+const AppSider: FC<SiderProps> = props => {
+  const navigate = useNavigate();
+  const isAuth = useAppSelector(state => state.auth.isAuth);
+  const isAdminOrModerator = useIsModeratorOrAdmin();
 
-  return (
-    isAuth && (
-      <Sider {...rest}>
+  if (isAuth)
+    return (
+      <Sider {...props}>
         <Flex vertical gap={10}>
-          <NavLink to={'/'} end>
+          <Button
+            icon={<CarryOutOutlined />}
+            variant={'solid'}
+            color={'primary'}
+            size={'large'}
+            style={{
+              width: '100%',
+            }}
+            onClick={() => navigate('/')}
+          >
+            Список задач
+          </Button>
+
+          <Button
+            icon={<SmileOutlined />}
+            variant={'solid'}
+            color={'primary'}
+            size={'large'}
+            style={{
+              width: '100%',
+            }}
+            onClick={() => navigate('/profile')}
+          >
+            Профиль
+          </Button>
+
+          {isAdminOrModerator && (
             <Button
-              icon={<CarryOutOutlined />}
+              icon={<UserSwitchOutlined />}
               variant={'solid'}
               color={'primary'}
               size={'large'}
               style={{
                 width: '100%',
               }}
+              onClick={() => navigate('/users')}
             >
-              Список задач
+              Пользователи
             </Button>
-          </NavLink>
-          <NavLink to={'/profile'}>
-            <Button
-              icon={<SmileOutlined />}
-              variant={'solid'}
-              color={'primary'}
-              size={'large'}
-              style={{
-                width: '100%',
-              }}
-            >
-              Профиль
-            </Button>
-          </NavLink>
+          )}
         </Flex>
       </Sider>
-    )
-  );
+    );
 };
 
 export default AppSider;

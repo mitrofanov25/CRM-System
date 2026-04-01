@@ -1,21 +1,24 @@
-import { FC } from 'react';
 import { Button, Form, FormProps, Input, notification, Typography } from 'antd';
-import { AuthData } from '../../types/authTypes.ts';
 import { Link, useNavigate } from 'react-router';
-import { login } from '../../services/authServices.ts';
-import { useAppDispatch } from '../../store';
-import { setAuth } from '../../store/slices/authSlice.ts';
-import { tokenManager } from '../../helpers/TokenManager.ts';
+
 import {
   VALIDATION_INPUTS_MESSAGE,
   VALIDATION_INPUTS_RULES,
-} from '../../constants/validationRules.ts';
+} from '../../constants/validationRules';
+import { tokenManager } from '../../helpers/TokenManager';
+import { login } from '../../services/authServices';
+import { getProfile } from '../../services/usersServices';
+import { useAppDispatch } from '../../store';
+import { setAuth, setProfile } from '../../store/slices/authSlice';
+import { AuthData } from '../../types/authTypes';
 
-const LoginPage: FC = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const onFinish: FormProps['onFinish'] = async (authData: AuthData) => {
+  const handleLoginSubmit: FormProps['onFinish'] = async (
+    authData: AuthData,
+  ): Promise<void> => {
     try {
       const response = await login(authData);
 
@@ -24,9 +27,10 @@ const LoginPage: FC = () => {
 
       dispatch(setAuth(true));
 
+      await fetchProfile();
+
       navigate('/');
-    } catch (e) {
-      console.error(e);
+    } catch {
       notification.error({
         title: 'Ошибка!',
         description: 'Неверные логин или пароль',
@@ -35,11 +39,24 @@ const LoginPage: FC = () => {
     }
   };
 
+  const fetchProfile = async (): Promise<void> => {
+    try {
+      const response = await getProfile();
+
+      dispatch(setProfile(response.data));
+    } catch {
+      notification.error({
+        title: 'Ошибка!',
+        description: 'Ошибка при получении профиля',
+      });
+    }
+  };
+
   return (
     <Form
       name="basic"
       style={{ maxWidth: 420 }}
-      onFinish={onFinish}
+      onFinish={handleLoginSubmit}
       autoComplete="off"
       layout={'vertical'}
       size={'large'}

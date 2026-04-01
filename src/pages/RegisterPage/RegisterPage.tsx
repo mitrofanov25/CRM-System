@@ -1,12 +1,13 @@
-import { FC, useState } from 'react';
 import { Button, Form, FormProps, Input, notification, Typography } from 'antd';
-import { UserRegistration } from '../../types/authTypes.ts';
-import { register } from '../../services/authServices.ts';
+import { FC, useState } from 'react';
 import { Link } from 'react-router';
+
 import {
   VALIDATION_INPUTS_MESSAGE,
   VALIDATION_INPUTS_RULES,
 } from '../../constants/validationRules.ts';
+import { register } from '../../services/authServices.ts';
+import { UserRegistration } from '../../types/authTypes.ts';
 
 const RegisterPage: FC = () => {
   const [isRegistered, setIsRegistered] = useState<boolean>(false);

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
@@ -12,14 +12,15 @@ import {
   PopconfirmProps,
   Space,
 } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/es/checkbox/Checkbox';
-import { TodoRequest } from '../../types/todoTypes.ts';
-import { deleteTodo, editTodo } from '../../services/todoServices.ts';
+import { FC, useState } from 'react';
+
 import {
   VALIDATION_INPUTS_MESSAGE,
   VALIDATION_INPUTS_RULES,
 } from '../../constants/validationRules.ts';
+import { deleteTodo, editTodo } from '../../services/todoServices.ts';
+import { TodoRequest } from '../../types/todoTypes.ts';
 
 interface TodoItemProps {
   id: number;
@@ -28,7 +29,7 @@ interface TodoItemProps {
   updateTodo: () => Promise<void>;
 }
 
-const TodoItem: FC<TodoItemProps> = (props) => {
+const TodoItem: FC<TodoItemProps> = props => {
   const { id, title, isDone, updateTodo } = props;
 
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -39,8 +40,7 @@ const TodoItem: FC<TodoItemProps> = (props) => {
       await updateTodo();
 
       setIsEdit(false);
-    } catch (e) {
-      console.error(e);
+    } catch {
       notification.error({
         title: 'Ошибка!',
         description: 'Ошибка при редактировании задачи',
@@ -54,8 +54,7 @@ const TodoItem: FC<TodoItemProps> = (props) => {
     try {
       await editTodo(id, { isDone: event.target.checked });
       await updateTodo();
-    } catch (e) {
-      console.error(e);
+    } catch {
       notification.error({
         title: 'Ошибка!',
         description: 'Ошибка при редактировании задачи',
@@ -67,8 +66,7 @@ const TodoItem: FC<TodoItemProps> = (props) => {
     try {
       await deleteTodo(id);
       await updateTodo();
-    } catch (e) {
-      console.error(e);
+    } catch {
       notification.error({
         title: 'Ошибка!',
         description: 'Ошибка при удалении задачи',

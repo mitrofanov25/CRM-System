@@ -1,7 +1,8 @@
+import { notification } from 'antd';
 import axios from 'axios';
+
 import { tokenManager } from '../helpers/TokenManager.ts';
 import { Token } from '../types/authTypes.ts';
-import { notification } from 'antd';
 
 export const API_URL = 'https://easydev.club/api/v1';
 
@@ -10,14 +11,14 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
   config.headers.Authorization = `Bearer ${tokenManager.getToken()}`;
   return config;
 });
 
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const prevRequest = error?.config;
 
     if (error?.response?.status === 401 && !prevRequest?.sent) {
@@ -35,8 +36,7 @@ api.interceptors.response.use(
         localStorage.setItem('token', response.data.refreshToken);
 
         return api(prevRequest);
-      } catch (e) {
-        console.error(e);
+      } catch {
         notification.error({
           title: 'Ошибка!',
           description: 'Срок действия токена истек',

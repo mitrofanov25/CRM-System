@@ -1,19 +1,21 @@
-import { Flex, Layout } from 'antd';
-import Routers from './components/Routers';
-import AppSider from './components/AppSider';
+import { Flex, Layout, notification } from 'antd';
 import { Content } from 'antd/es/layout/layout';
-import { useAppDispatch, useAppSelector } from './store';
-import { useEffect, useState } from 'react';
-import loginImage from './assets/image/auth_illustration.png';
 import axios from 'axios';
-import { Token } from './types/authTypes.ts';
-import { API_URL } from './api/http.ts';
-import { tokenManager } from './helpers/TokenManager.ts';
-import { setAuth } from './store/slices/authSlice.ts';
+import { useEffect, useState } from 'react';
+
+import { API_URL } from './api/http';
+import loginImage from './assets/image/auth_illustration.png';
+import AppRoutes from './components/AppRoutes';
+import AppSider from './components/AppSider';
+import { tokenManager } from './helpers/TokenManager';
+import { getProfile } from './services/usersServices';
+import { useAppDispatch, useAppSelector } from './store';
+import { setAuth, setProfile } from './store/slices/authSlice';
+import { Token } from './types/authTypes';
 
 function App() {
   const dispatch = useAppDispatch();
-  const isAuth = useAppSelector((state) => state.auth.isAuth);
+  const isAuth = useAppSelector(state => state.auth.isAuth);
   const [isLoading, setIsLoading] = useState(!!localStorage.getItem('token'));
 
   const refresh = async (token: string) => {
@@ -28,6 +30,19 @@ function App() {
     localStorage.setItem('token', response.data.refreshToken);
   };
 
+  const fetchProfile = async () => {
+    try {
+      const response = await getProfile();
+
+      dispatch(setProfile(response.data));
+    } catch {
+      notification.error({
+        title: 'Ошибка!',
+        description: 'Ошибка при получении профиля',
+      });
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
@@ -36,8 +51,8 @@ function App() {
         setIsLoading(true);
         try {
           await refresh(token);
-        } catch (e) {
-          console.error(e);
+          await fetchProfile();
+        } catch {
           localStorage.clear();
           tokenManager.clearToken();
         }
@@ -59,7 +74,7 @@ function App() {
       <Flex align={'center'} justify={'center'}>
         {!isAuth && <img width={1000} height={1000} src={loginImage} alt="" />}
         <Content>
-          <Routers />
+          <AppRoutes />
         </Content>
       </Flex>
     </Layout>

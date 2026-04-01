@@ -8,18 +8,19 @@ import {
   Space,
 } from 'antd';
 import { FC } from 'react';
-import { Todo } from '../../types/todoTypes.ts';
-import { addTodo } from '../../services/todoServices.ts';
+
 import {
   VALIDATION_INPUTS_MESSAGE,
   VALIDATION_INPUTS_RULES,
 } from '../../constants/validationRules.ts';
+import { addTodo } from '../../services/todoServices.ts';
+import { Todo } from '../../types/todoTypes.ts';
 
 type TodoTitleProps = {
   updateTodo: () => Promise<void>;
 };
 
-const TodoTitle: FC<TodoTitleProps> = (props) => {
+const TodoTitle: FC<TodoTitleProps> = props => {
   const { updateTodo } = props;
 
   const onFinish: FormProps['onFinish'] = async (
@@ -28,8 +29,7 @@ const TodoTitle: FC<TodoTitleProps> = (props) => {
     try {
       await addTodo(values.title);
       await updateTodo();
-    } catch (e) {
-      console.error(e);
+    } catch {
       notification.error({
         title: 'Ошибка!',
         description: 'Ошибка при добавлении задачи',
